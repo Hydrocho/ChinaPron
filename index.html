@@ -40,8 +40,7 @@
 
         <!-- 메인 단어 표시 -->
         <div class="py-10 bg-slate-50 rounded-2xl border border-slate-100 mb-6 transition-all duration-300">
-          <h2 id="word-han" class="text-7xl font-black text-slate-800 mb-6 tracking-tighter"></h2>
-          <div class="inline-block bg-red-100 text-red-600 px-6 py-2 rounded-full text-2xl font-bold mb-4 shadow-sm">
+          <div class="inline-block bg-red-100 text-red-600 px-6 py-3 rounded-full font-black mb-4 shadow-sm" style="font-size:2.4rem">
             <span id="word-pinyin"></span>
           </div>
           <div class="mt-4">
@@ -196,7 +195,6 @@
   const tabsEl    = document.getElementById('tabs');
   const setLabel  = document.getElementById('set-label');
   const wordCounter = document.getElementById('word-counter');
-  const wordHan   = document.getElementById('word-han');
   const wordPinyin = document.getElementById('word-pinyin');
   const wordKr    = document.getElementById('word-kr');
   const wordRead  = document.getElementById('word-read');
@@ -236,7 +234,6 @@
 
     setLabel.textContent = (currentToneGroup + 1) + ' SET';
     wordCounter.textContent = (currentIndex + 1) + ' / ' + group.words.length;
-    wordHan.textContent    = word.han;
     wordPinyin.textContent = word.pinyin;
     wordKr.textContent     = word.kr;
     wordRead.textContent   = '읽기: ' + word.read;
