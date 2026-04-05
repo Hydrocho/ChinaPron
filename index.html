@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>중국어 성조 마스터</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+
+<div class="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4 font-sans">
+  <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+
+    <!-- 상단 타이틀 -->
+    <div class="bg-gradient-to-r from-red-600 to-red-500 p-6 text-white text-center shadow-inner">
+      <h1 class="text-xl font-bold flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        중국어 성조 마스터
+      </h1>
+      <p class="text-red-100 text-xs mt-1 opacity-90">2026 상촌중학교 중국어 학습지 전체</p>
+    </div>
+
+    <!-- 성조 탭 메뉴 -->
+    <div id="tabs" class="flex overflow-x-auto p-3 bg-slate-100 gap-2 no-scrollbar"></div>
+
+    <!-- 카드 영역 -->
+    <div class="p-8 flex flex-col items-center text-center justify-between" style="min-height:460px">
+      <div class="w-full">
+        <div class="flex justify-between items-center mb-6 text-slate-400 font-bold text-xs uppercase tracking-widest">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span id="set-label"></span>
+          </span>
+          <span id="word-counter"></span>
+        </div>
+
+        <!-- 메인 단어 표시 -->
+        <div class="py-10 bg-slate-50 rounded-2xl border border-slate-100 mb-6 transition-all duration-300">
+          <h2 id="word-han" class="text-7xl font-black text-slate-800 mb-6 tracking-tighter"></h2>
+          <div class="inline-block bg-red-100 text-red-600 px-6 py-2 rounded-full text-2xl font-bold mb-4 shadow-sm">
+            <span id="word-pinyin"></span>
+          </div>
+          <div class="mt-4">
+            <p id="word-kr" class="text-3xl text-slate-700 font-bold mb-1"></p>
+            <p id="word-read" class="text-slate-400 text-sm font-medium"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 알림 및 버튼 -->
+      <div class="w-full space-y-4">
+        <div id="error-box" class="hidden bg-amber-50 text-amber-700 p-3 rounded-xl text-xs items-center gap-2 border border-amber-200 animate-bounce">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="error-text"></span>
+        </div>
+
+        <button id="play-btn"
+          class="w-20 h-20 rounded-full mx-auto flex items-center justify-center transition-all shadow-xl active:scale-90 bg-red-500 text-white hover:bg-red-600">
+          <svg id="volume-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 하단 내비게이션 -->
+    <div class="grid grid-cols-2 gap-px bg-slate-100 border-t border-slate-200">
+      <button id="prev-btn" class="p-5 flex items-center justify-center gap-2 text-slate-600 bg-white hover:bg-slate-50 font-bold transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        이전
+      </button>
+      <button id="next-btn" class="p-5 flex items-center justify-center gap-2 text-slate-600 bg-white hover:bg-slate-50 font-bold transition-colors border-l border-slate-100">
+        다음
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center" style="max-width:320px">
+    <p class="text-slate-400 leading-relaxed" style="font-size:11px">
+      학습지의 모든 단어를 수록했습니다. 각 탭을 눌러 성조 조합별로 연습하세요.<br>
+      <span class="text-red-400 font-bold">Tip:</span> 스피커 아이콘을 누르면 AI가 실제 원어민의 성조와 억양으로 읽어줍니다.
+    </p>
+  </div>
+</div>
+
+<script>
+  const vocabulary = [
+    {
+      group: "제1성 시작 (1성+)",
+      words: [
+        { han: "初中", pinyin: "chūzhōng", kr: "중학교", read: "츄쭝" },
+        { han: "今天", pinyin: "jīntiān", kr: "오늘", read: "찐티엔" },
+        { han: "分钟", pinyin: "fēnzhōng", kr: "분", read: "펀쭝" },
+        { han: "飞机", pinyin: "fēijī", kr: "비행기", read: "페이지" },
+        { han: "中国", pinyin: "Zhōngguó", kr: "중국", read: "쭝구오" },
+        { han: "今年", pinyin: "jīnnián", kr: "올해", read: "찐니엔" },
+        { han: "聪明", pinyin: "cōngmíng", kr: "총명하다", read: "총밍" },
+        { han: "将来", pinyin: "jiānglái", kr: "장래", read: "찌앙라이" },
+        { han: "铅笔", pinyin: "qiānbǐ", kr: "연필", read: "치엔비" },
+        { han: "书法", pinyin: "shūfǎ", kr: "서예", read: "슈파" },
+        { han: "黑板", pinyin: "hēibǎn", kr: "칠판", read: "헤이반" },
+        { han: "恭喜", pinyin: "gōngxǐ", kr: "축하해", read: "꽁씨" },
+        { han: "高兴", pinyin: "gāoxìng", kr: "기쁘다", read: "가오씽" },
+        { han: "生日", pinyin: "shēngrì", kr: "생일", read: "셩르" },
+        { han: "音乐", pinyin: "yīnyuè", kr: "음악", read: "인위에" },
+        { han: "书店", pinyin: "shūdiàn", kr: "서점", read: "슈디엔" },
+        { han: "关系", pinyin: "guānxi", kr: "관계", read: "꽌시" },
+        { han: "桌子", pinyin: "zhuōzi", kr: "탁자", read: "쭈오즈" },
+        { han: "多少", pinyin: "duōshao", kr: "얼마", read: "뚜오샤오" },
+        { han: "包子", pinyin: "bāozi", kr: "만두", read: "바오즈" }
+      ]
+    },
+    {
+      group: "제2성 시작 (2성+)",
+      words: [
+        { han: "明天", pinyin: "míngtiān", kr: "내일", read: "밍티엔" },
+        { han: "学生", pinyin: "xuéshēng", kr: "학생", read: "쉬에셩" },
+        { han: "铅笔", pinyin: "qiānbǐ", kr: "연필", read: "치엔비" },
+        { han: "熊猫", pinyin: "xióngmāo", kr: "판다", read: "숑마오" },
+        { han: "韩国", pinyin: "Hánguó", kr: "한국", read: "한구오" },
+        { han: "年纪", pinyin: "niánjì", kr: "나이", read: "니엔지" },
+        { han: "篮球", pinyin: "lánqiú", kr: "농구", read: "란치우" },
+        { han: "邮局", pinyin: "yóujú", kr: "우체국", read: "요우쥐" },
+        { han: "没有", pinyin: "méiyǒu", kr: "없다", read: "메이요" },
+        { han: "游泳", pinyin: "yóuyǒng", kr: "수영하다", read: "요우용" },
+        { han: "门口", pinyin: "ménkǒu", kr: "입구", read: "먼코우" },
+        { han: "词典", pinyin: "cídiǎn", kr: "사전", read: "츠디엔" },
+        { han: "年纪", pinyin: "niánjì", kr: "나이", read: "니엔지" },
+        { han: "学校", pinyin: "xuéxiào", kr: "학교", read: "쉬에씨아오" },
+        { han: "红色", pinyin: "hóngsè", kr: "빨간색", read: "홍써" },
+        { han: "蓝色", pinyin: "lánsè", kr: "남색", read: "란써" },
+        { han: "什么", pinyin: "shénme", kr: "무엇", read: "션머" },
+        { han: "名字", pinyin: "míngzi", kr: "이름", read: "밍즈" },
+        { han: "朋友", pinyin: "péngyou", kr: "친구", read: "펑요우" },
+        { han: "便宜", pinyin: "piányi", kr: "싸다", read: "피엔이" }
+      ]
+    },
+    {
+      group: "제3성 시작 (3성+)",
+      words: [
+        { han: "老师", pinyin: "lǎoshī", kr: "선생님", read: "라오스" },
+        { han: "手机", pinyin: "shǒujī", kr: "핸드폰", read: "쇼우지" },
+        { han: "火车", pinyin: "huǒchē", kr: "기차", read: "후오쳐" },
+        { han: "好吃", pinyin: "hǎochī", kr: "맛있다", read: "하오츠" },
+        { han: "美国", pinyin: "Měiguó", kr: "미국", read: "메이구오" },
+        { han: "小学", pinyin: "xiǎoxué", kr: "초등학교", read: "샤오쉬에" },
+        { han: "起床", pinyin: "qǐchuáng", kr: "기상", read: "치츄앙" },
+        { han: "可以", pinyin: "kěyǐ", kr: "할 수 있다", read: "커이" },
+        { han: "你好", pinyin: "nǐ hǎo", kr: "안녕", read: "니하오" },
+        { han: "剪纸", pinyin: "jiǎnzhǐ", kr: "종이공예", read: "찌엔즈" },
+        { han: "拱手", pinyin: "gǒngshǒu", kr: "공수", read: "공쇼우" },
+        { han: "考试", pinyin: "kǎoshì", kr: "시험", read: "카오스" },
+        { han: "午饭", pinyin: "wǔfàn", kr: "점심밥", read: "우판" },
+        { han: "请问", pinyin: "qǐngwèn", kr: "실례합니다", read: "칭원" },
+        { han: "请客", pinyin: "qǐngkè", kr: "내가낼게", read: "칭커" },
+        { han: "早上", pinyin: "zǎoshang", kr: "아침", read: "자오샹" },
+        { han: "喜欢", pinyin: "xǐhuan", kr: "좋아하다", read: "씨환" },
+        { han: "怎么", pinyin: "zěnme", kr: "어떻게", read: "전머" },
+        { han: "饺子", pinyin: "jiǎozi", kr: "교자/만두", read: "찌아오즈" }
+      ]
+    },
+    {
+      group: "제4성 시작 (4성+)",
+      words: [
+        { han: "后天", pinyin: "hòutiān", kr: "모레", read: "호우티엔" },
+        { han: "读书", pinyin: "dúshū", kr: "독서", read: "두슈" },
+        { han: "唱歌", pinyin: "chàng gē", kr: "노래부르다", read: "창꺼" },
+        { han: "大学", pinyin: "dàxué", kr: "대학교", read: "따쉬에" },
+        { han: "问题", pinyin: "wèntí", kr: "문제", read: "원티" },
+        { han: "棒球", pinyin: "bàngqiú", kr: "야구", read: "빵치우" },
+        { han: "绿茶", pinyin: "lǜchá", kr: "녹차", read: "뤼차" },
+        { han: "汉语", pinyin: "Hànyǔ", kr: "중국어", read: "한위" },
+        { han: "电脑", pinyin: "diànnǎo", kr: "컴퓨터", read: "디엔나오" },
+        { han: "跳舞", pinyin: "tiàowǔ", kr: "춤추다", read: "티아오우" },
+        { han: "电影", pinyin: "diànyǐng", kr: "영화", read: "디엔잉" },
+        { han: "再见", pinyin: "zàijiàn", kr: "안녕히가세요", read: "짜이지엔" },
+        { han: "现在", pinyin: "xiànzài", kr: "지금", read: "씨엔짜이" },
+        { han: "运动", pinyin: "yùndòng", kr: "운동", read: "윈똥" },
+        { han: "睡觉", pinyin: "shuìjiào", kr: "자다", read: "슈에이찌아오" },
+        { han: "谢谢", pinyin: "xièxie", kr: "고마워", read: "씨에씨에" },
+        { han: "认识", pinyin: "rènshi", kr: "알다", read: "런스" },
+        { han: "帽子", pinyin: "màozi", kr: "모자", read: "마오즈" },
+        { han: "客气", pinyin: "kèqi", kr: "겸손하다", read: "크어치" }
+      ]
+    }
+  ];
+
+  let currentToneGroup = 0;
+  let currentIndex = 0;
+  let isPlaying = false;
+
+  // --- DOM refs ---
+  const tabsEl    = document.getElementById('tabs');
+  const setLabel  = document.getElementById('set-label');
+  const wordCounter = document.getElementById('word-counter');
+  const wordHan   = document.getElementById('word-han');
+  const wordPinyin = document.getElementById('word-pinyin');
+  const wordKr    = document.getElementById('word-kr');
+  const wordRead  = document.getElementById('word-read');
+  const errorBox  = document.getElementById('error-box');
+  const errorText = document.getElementById('error-text');
+  const playBtn   = document.getElementById('play-btn');
+  const volumeIcon = document.getElementById('volume-icon');
+  const prevBtn   = document.getElementById('prev-btn');
+  const nextBtn   = document.getElementById('next-btn');
+
+  // --- Build tabs ---
+  function buildTabs() {
+    tabsEl.innerHTML = '';
+    vocabulary.forEach((group, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = group.group;
+      btn.className = 'px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 ' +
+        (idx === currentToneGroup
+          ? 'bg-red-500 text-white shadow-lg scale-105'
+          : 'bg-white text-slate-500 hover:bg-slate-200');
+      btn.addEventListener('click', () => {
+        currentToneGroup = idx;
+        currentIndex = 0;
+        setError('');
+        render();
+      });
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  // --- Render current word ---
+  function render() {
+    const group = vocabulary[currentToneGroup];
+    const word  = group.words[currentIndex];
+
+    buildTabs();
+
+    setLabel.textContent = (currentToneGroup + 1) + ' SET';
+    wordCounter.textContent = (currentIndex + 1) + ' / ' + group.words.length;
+    wordHan.textContent    = word.han;
+    wordPinyin.textContent = word.pinyin;
+    wordKr.textContent     = word.kr;
+    wordRead.textContent   = '읽기: ' + word.read;
+
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === group.words.length - 1;
+    prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+    nextBtn.style.opacity = currentIndex === group.words.length - 1 ? '0.3' : '1';
+  }
+
+  function setError(msg) {
+    if (msg) {
+      errorText.textContent = msg;
+      errorBox.classList.remove('hidden');
+      errorBox.classList.add('flex');
+    } else {
+      errorBox.classList.add('hidden');
+      errorBox.classList.remove('flex');
+    }
+  }
+
+  function setPlayingState(playing) {
+    isPlaying = playing;
+    if (playing) {
+      playBtn.disabled = true;
+      playBtn.className = 'w-20 h-20 rounded-full mx-auto flex items-center justify-center transition-all shadow-xl bg-slate-200 text-slate-400';
+      volumeIcon.classList.add('animate-pulse');
+    } else {
+      playBtn.disabled = false;
+      playBtn.className = 'w-20 h-20 rounded-full mx-auto flex items-center justify-center transition-all shadow-xl active:scale-90 bg-red-500 text-white hover:bg-red-600';
+      volumeIcon.classList.remove('animate-pulse');
+    }
+  }
+
+  // --- Web Speech API (브라우저 내장 TTS) ---
+  async function getChineseVoice() {
+    let voices = speechSynthesis.getVoices();
+    if (voices.length === 0) {
+      await new Promise(resolve => {
+        speechSynthesis.addEventListener('voiceschanged', resolve, { once: true });
+        setTimeout(resolve, 1000);
+      });
+      voices = speechSynthesis.getVoices();
+    }
+    return voices.find(v => v.lang === 'zh-CN')
+        || voices.find(v => v.lang === 'zh-TW')
+        || voices.find(v => v.lang.startsWith('zh'))
+        || null;
+  }
+
+  async function playPronunciation(text) {
+    if (isPlaying) return;
+    setPlayingState(true);
+    setError('');
+
+    if (!window.speechSynthesis) {
+      setError('이 브라우저는 음성 재생을 지원하지 않습니다.');
+      setPlayingState(false);
+      return;
+    }
+
+    speechSynthesis.cancel();
+
+    const voice = await getChineseVoice();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang  = 'zh-CN';
+    utterance.rate  = 0.85;
+    utterance.pitch = 1;
+    if (voice) utterance.voice = voice;
+
+    utterance.onend = () => setPlayingState(false);
+    utterance.onerror = (e) => {
+      if (e.error !== 'interrupted') {
+        setError('음성 재생 오류. 브라우저 설정에서 중국어 음성을 확인하세요.');
+      }
+      setPlayingState(false);
+    };
+
+    speechSynthesis.speak(utterance);
+  }
+
+  // --- Event listeners ---
+  playBtn.addEventListener('click', () => {
+    const word = vocabulary[currentToneGroup].words[currentIndex];
+    playPronunciation(word.han);
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      setError('');
+      render();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < vocabulary[currentToneGroup].words.length - 1) {
+      currentIndex++;
+      setError('');
+      render();
+    }
+  });
+
+  // --- Init ---
+  render();
+</script>
+</body>
+</html>
