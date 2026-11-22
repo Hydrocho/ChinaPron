@@ -29,6 +29,7 @@
       <button id="btn-study" class="flex-1 py-2 rounded-xl text-sm font-bold transition-all">학습</button>
       <button id="btn-quiz"  class="flex-1 py-2 rounded-xl text-sm font-bold transition-all">퀴즈</button>
       <button id="btn-memo"  class="flex-1 py-2 rounded-xl text-sm font-bold transition-all">암기</button>
+      <button id="btn-speaking" class="flex-1 py-2 rounded-xl text-sm font-bold transition-all">말하기</button>
     </div>
 
     <!-- 성조 탭 -->
@@ -208,6 +209,7 @@ let appMode          = 'study';
 let currentToneGroup = 0;
 let currentIndex     = 0;
 let isPlaying        = false;
+let playbackVersion = 0;
 
 // 퀴즈: 각 그룹별 셔플된 순서
 let quizOrders = [];
@@ -254,17 +256,21 @@ const btnMemo     = document.getElementById('btn-memo');
 // ============================================================
 // 모드 전환
 // ============================================================
-const modeButtons = { study: btnStudy, quiz: btnQuiz, memo: btnMemo };
+const modeButtons = { study: btnStudy, quiz: btnQuiz, memo: btnMemo, speaking: document.getElementById('btn-speaking') };
 
 function setAppMode(mode) {
+  stopAudio();
   appMode = mode;
   currentIndex = 0;
+  setSpeakingVisibility(mode === 'speaking');
 
   // 탭 버튼 스타일
   Object.entries(modeButtons).forEach(([m, btn]) => {
     btn.className = 'flex-1 py-2 rounded-xl text-sm font-bold transition-all ' +
       (m === mode ? 'bg-white text-red-500 shadow' : 'text-slate-400');
   });
+
+  if (mode === 'speaking') { renderSpeaking(); return; }
 
   if (mode === 'quiz') {
     buildQuizOrders();
@@ -411,6 +417,8 @@ async function getChineseVoice() {
 
 async function playPronunciation(text) {
   if (isPlaying) return;
+  if (!('speechSynthesis' in window)) { setError('이 브라우저에서는 음성 재생을 지원하지 않습니다.'); return; }
+  const version = ++playbackVersion;
   isPlaying = true;
   setError('');
   playBtn.disabled = true;
@@ -419,6 +427,7 @@ async function playPronunciation(text) {
 
   speechSynthesis.cancel();
   const voice = await getChineseVoice();
+  if (version !== playbackVersion) return;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang  = 'zh-CN';
   utterance.rate  = 0.85;
@@ -426,6 +435,7 @@ async function playPronunciation(text) {
   if (voice) utterance.voice = voice;
 
   const done = () => {
+    if (version !== playbackVersion) return;
     isPlaying = false;
     playBtn.disabled = false;
     playBtn.className = 'w-20 h-20 rounded-full mx-auto flex items-center justify-center transition-all shadow-xl active:scale-90 bg-red-500 text-white hover:bg-red-600';
@@ -439,12 +449,14 @@ async function playPronunciation(text) {
 // ============================================================
 // 이벤트
 // ============================================================
-playBtn.addEventListener('click', () => playPronunciation(currentWord().han));
+playBtn.addEventListener('click', () => { const word = currentWord(); if (word) playPronunciation(word.han); });
 
 prevBtn.addEventListener('click', () => {
+  stopAudio();
   if (currentIndex > 0) { currentIndex--; setError(''); render(); }
 });
 nextBtn.addEventListener('click', () => {
+  stopAudio();
   if (currentIndex < totalWords() - 1) { currentIndex++; setError(''); render(); }
 });
 
@@ -463,9 +475,9 @@ bookmarkBtn.addEventListener('click', () => {
   render();
 });
 
-// ============================================================
-// 초기화
-// ============================================================
+</script>
+<script src="speaking.js"></script>
+<script>
 buildQuizOrders();
 setAppMode('study');
 </script>
